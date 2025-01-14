@@ -1,48 +1,63 @@
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Org Chart Uploader</h2>
-  
+<div class="max-container bg-sky-50 min-h-screen flex flex-col justify-center items-center align-items-center">
+  <div class="w-6/12 mt-6 mb-6 mx-auto p-8 bg-white rounded-lg shadow-lg border-x-sky-100 border-[1px]">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8">Org Chart Uploader</h2>
+    
     <!-- File Upload Section -->
-    <div class="mb-6">
-      <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-2">
-        Upload CSV or Excel File
-      </label>
-      <input
-        type="file"
-        id="file-upload"
+    <div class="flex items-center justify-center w-full mb-8">
+      <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+          <svg class="w-10 h-10 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+          </svg>
+          <p class="mb-2 text-sm text-gray-600"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+          <p class="text-xs text-gray-500">CSV, XLSX, XLS</p>
+        </div>
+        <input id="dropzone-file" type="file"
         accept=".csv, .xlsx, .xls"
-        (change)="onFileChange($event)"
-        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-    </div>
-  
+        (change)="onFileChange($event)"  class="hidden" />
+      </label>
+    </div> 
+    
     <!-- Root User Information -->
-    <div class="mb-6">
-      <h3 class="text-xl font-semibold text-gray-800 mb-4">Root User Information</h3>
+    <div class="mb-8" *ngIf="rootName || rootEmail">
+      <h3 class="text-2xl font-semibold text-gray-900 mb-4">Root User Information</h3>
       <div *ngIf="rootName && rootEmail">
-        <p><strong>Name:</strong> {{ rootName }}</p>
-        <p><strong>Email:</strong> {{ rootEmail }}</p>
+      <p class="text-lg"><strong>Name:</strong> {{ rootName }}</p>
+      <p class="text-lg"><strong>Email:</strong> {{ rootEmail }}</p>
       </div>
       <div *ngIf="!rootName || !rootEmail">
-        <p class="text-sm text-gray-600">No Root user found in the data.</p>
+      <p class="text-sm text-gray-600">No Root user found in the data.</p>
       </div>
     </div>
-  
+    
     <!-- Error Categories -->
-    <div *ngIf="csvErrors.length > 0" class="space-y-4">
-      <h3 class="text-xl font-semibold text-gray-800">Errors:</h3>
+    <div *ngIf="csvErrors.length > 0" class="space-y-6">
+      <h3 class="text-2xl font-semibold text-gray-900">Errors:</h3>
       <div *ngFor="let category of errorCategories">
-        <h4 class="text-lg font-medium text-gray-700">{{ category }}</h4>
-        <ul class="list-disc pl-5 space-y-2">
-          <li *ngFor="let error of getErrorsByCategory(category)" class="text-sm text-gray-600">
-            Row {{ error.row - 1 }}: {{ error.message }}
-          </li>
-        </ul>
+      <h4 *ngIf="getErrorsByCategory(category).length > 0" class="text-xl font-medium text-red-800 mb-4">{{ category }}</h4>
+      <div *ngIf="getErrorsByCategory(category).length > 0" class="overflow-x-auto rounded-lg border border-gray-200">
+      <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
+        <thead class="bg-gray-50">
+        <tr>
+          <th class="whitespace-nowrap px-4 py-2 font-medium text-left text-gray-900">Row</th>
+          <th class="whitespace-nowrap px-4 py-2 font-medium text-left text-gray-900">Error</th>
+        </tr>
+        </thead>
+      
+        <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let error of getErrorsByCategory(category); let i = index" [ngClass]="{'bg-gray-50': i % 2 === 0, 'bg-white': i % 2 !== 0}">
+          <td class="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">{{ error.row - 1 }}</td>
+          <td class="px-4 py-2 text-gray-700 text-left">{{ error.message }}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
       </div>
     </div>
-  
+    
     <!-- No Errors Message -->
-    <div *ngIf="csvErrors.length === 0 && csvUploaded" class="mt-6">
+    <div *ngIf="csvErrors.length === 0 && csvUploaded" class="mt-8">
       <p class="text-sm text-green-600">No errors found. The hierarchy is valid!</p>
     </div>
   </div>
-  
+  </div>
